@@ -14,17 +14,22 @@ public class DBUtil {
 
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            System.out.println("Driver Connection Failed.....");
+            System.out.println("---------------------------------------------");
+            System.out.println("            Driver Connection Failed..       ");
         }
 
         String url = "jdbc:mysql://localhost:3306/SulabhBankDataBase";
 
         try {
             conn = DriverManager.getConnection(url, "root", "Sanket@123");
-            System.out.println("Connection Successfull.....");
+            System.out.println("---------------------------------------------");
+            System.out.println("             Connection Successfull..        ");
+            System.out.println("---------------------------------------------");
         } catch (SQLException e) {
             e.printStackTrace();
-            System.out.println("Connection Failed.....");
+            System.out.println("---------------------------------------------");
+            System.out.println("               Connection Failed..           ");
+            System.out.println("---------------------------------------------");
         }
         return conn;
     }

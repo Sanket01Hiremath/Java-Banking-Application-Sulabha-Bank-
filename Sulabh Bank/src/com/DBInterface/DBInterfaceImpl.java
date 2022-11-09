@@ -10,19 +10,23 @@ import java.sql.SQLException;
 public class DBInterfaceImpl implements DBInterface{
 
     @Override
-    public String ConnectToDB(String username,String password) {
-        String message="Not Connected...!";
+    public Boolean ConnectToDB(String username,String password) {
 
         try(Connection conn= DBUtil.ConnectToDataBase()) {
             PreparedStatement ps=conn.prepareStatement("Select * from Accountant where username=? and password=?");
             ps.setString(1,username);
             ps.setString(2,password);
             ResultSet rs=ps.executeQuery();
-            message="Admin login Successfull...";
+            if(rs.next()){
+                return true;
+            }else{
+                return false;
+            }
         } catch (SQLException e) {
-            message=e.getMessage();
+            e.printStackTrace();
+            return false;
         }
 
-        return message;
+
     }
 }
