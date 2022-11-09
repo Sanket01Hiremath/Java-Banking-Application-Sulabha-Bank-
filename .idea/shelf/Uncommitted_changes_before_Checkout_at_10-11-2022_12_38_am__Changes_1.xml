@@ -1,0 +1,24 @@
+<changelist name="Uncommitted_changes_before_Checkout_at_10-11-2022_12_38_am_[Changes]1" date="1668020919203" recycled="true" deleted="true">
+  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10-11-2022_12_38_am_[Changes]1/shelved.patch" />
+  <option name="DESCRIPTION" value="Uncommitted changes before Checkout at 10-11-2022 12:38 am [Changes]" />
+  <binary>
+    <option name="BEFORE_PATH" value="out/production/Sulabh Bank/com/DBUtility/DBUtil.class" />
+    <option name="AFTER_PATH" value="out/production/Sulabh Bank/com/DBUtility/DBUtil.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10-11-2022_12_38_am_[Changes]1/DBUtil.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="out/production/Sulabh Bank/com/DBInterface/DBInterface.class" />
+    <option name="AFTER_PATH" value="out/production/Sulabh Bank/com/DBInterface/DBInterface.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10-11-2022_12_38_am_[Changes]1/DBInterface.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="out/production/Sulabh Bank/com/DBAdmin/Login.class" />
+    <option name="AFTER_PATH" value="out/production/Sulabh Bank/com/DBAdmin/Login.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10-11-2022_12_38_am_[Changes]1/Login.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="out/production/Sulabh Bank/com/DBInterface/DBInterfaceImpl.class" />
+    <option name="AFTER_PATH" value="out/production/Sulabh Bank/com/DBInterface/DBInterfaceImpl.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10-11-2022_12_38_am_[Changes]1/DBInterfaceImpl.class" />
+  </binary>
+</changelist>
