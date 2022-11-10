@@ -16,6 +16,7 @@ public class DBUtil {
             e.printStackTrace();
             System.out.println("---------------------------------------------");
             System.out.println("            Driver Connection Failed..       ");
+            System.out.println("---------------------------------------------");
         }
 
         String url = "jdbc:mysql://localhost:3306/SulabhBankDataBase";
