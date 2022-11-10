@@ -1,13 +1,14 @@
 package com.DBAdmin;
 
-import Exeptions.adminExeption;
+import Home.FirstPage;
+import com.AdminTasks.AdminTaskMenu;
 import com.DBInterface.DBInterface;
 import com.DBInterface.DBInterfaceImpl;
 
 import java.util.Scanner;
 
-public class Login {
-    public static void main(String[] args) throws adminExeption {
+public class AdminLogin {
+    public static void Adminlogin() {
         Scanner sc=new Scanner(System.in);
         System.out.println("---------------------------------------------");
         System.out.println("                 Admin Login                 ");
@@ -17,17 +18,16 @@ public class Login {
         System.out.print("Enter Password: ");
         String password=sc.next();
         System.out.println("---------------------------------------------");
-
         DBInterface DBI=new DBInterfaceImpl();
         Boolean reply=DBI.ConnectToDB(username,password);
         if(reply==true){
-
             System.out.println("              Login Successfull..            ");
             System.out.println("---------------------------------------------");
-
+            AdminTaskMenu.ChooseATask();
         }else{
             System.out.println("---------------------------------------------");
-            throw new adminExeption("Enter correct username or password");
+            System.out.println("      Enter correct username or password     ");
+            FirstPage.firstPage();
         }
     }
 }
