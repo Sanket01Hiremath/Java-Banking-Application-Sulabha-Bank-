@@ -3,6 +3,7 @@ package com.DBUser;
 import Home.FirstPage;
 import com.DBInterface.DBInterface;
 import com.DBInterface.DBInterfaceImpl;
+import com.UserTasks.UserTasksMenu;
 
 import java.util.Scanner;
 
@@ -19,14 +20,6 @@ public class UserLogin {
         System.out.println("---------------------------------------------");
 
         DBInterface DBI=new DBInterfaceImpl();
-        Boolean reply=DBI.ConnectUserToDB(username,password);
-        if(reply==true){
-            System.out.println("              Login Successfull..            ");
-            System.out.println("---------------------------------------------");
-        }else{
-            System.out.println("---------------------------------------------");
-            System.out.println("      Enter correct username or password     ");
-            FirstPage.firstPage();
-        }
+        DBI.ConnectUserToDB(username,password);
     }
 }

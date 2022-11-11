@@ -1,12 +1,13 @@
 package com.DBInterface;
 
+import Home.FirstPage;
 import com.Beans.UserBean;
 import com.DBUtility.DBUtil;
+import com.UserTasks.UserTasksMenu;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Scanner;
 
 public class DBInterfaceImpl implements DBInterface{
@@ -31,7 +32,7 @@ public class DBInterfaceImpl implements DBInterface{
     }
 
     @Override
-    public Boolean ConnectUserToDB(String username, String password) {
+    public void ConnectUserToDB(String username, String password) {
 
         try(Connection conn=DBUtil.ConnectToDataBase()) {
             PreparedStatement ps=conn.prepareStatement("Select * from Users where username=? and password=?");
@@ -39,13 +40,20 @@ public class DBInterfaceImpl implements DBInterface{
             ps.setString(2,password);
             ResultSet rs=ps.executeQuery();
             if(rs.next()){
-                return true;
+                System.out.println("---------------------------------------------");
+                System.out.println("               Login Successful              ");
+                UserTasksMenu.ChooseATask(rs.getInt("AccountNumber"));
             }else{
-                return false;
+                System.out.println("---------------------------------------------");
+                System.out.println("            User Does Not Exists..           ");
+                System.out.println("---------------------------------------------");
+                FirstPage.firstPage();
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            System.out.println("---------------------------------------------");
+            System.out.println("            User Does Not Exists..           ");
+            System.out.println("---------------------------------------------");
+            FirstPage.firstPage();
         }
     }
 
@@ -68,7 +76,7 @@ public class DBInterfaceImpl implements DBInterface{
         String Uname=sc.next();
         System.out.print("Password     : ");
         String Password=sc.next();
-        System.out.println("---------------------------------------------");
+        System.out.println("-------------------------------------------------------------------");
 
         UserBean userBean=new UserBean(id,AcNo,Fname,Lname,Address,AreaCode,Uname,Password);
         return CreateUser(userBean);
@@ -90,19 +98,53 @@ public class DBInterfaceImpl implements DBInterface{
             ps.setString(8,userBean.getPassword());
             int x=ps.executeUpdate();
             if(x==1) {
-                message ="New User Added";
+                DBInterface DBI=new DBInterfaceImpl();
+                message=DBI.CreateDepositTable(userBean.getAccountNo());
             }else{
-                message="New User Not Added";
+                message="                        New User Not Added                         ";
+                System.out.println("-------------------------------------------------------------------");
             }
-            System.out.println("---------------------------------------------");
+
         } catch (SQLException e) {
             message=e.getMessage();
-            System.out.println("---------------------------------------------");
+            System.out.println("-------------------------------------------------------------------");
         }
 
         return message;
     }
 
+    @Override
+    public String CreateDepositTable(int name) {
+        String message="";
+
+        try(Connection conn=DBUtil.ConnectToDataBase()){
+            PreparedStatement ps=conn.prepareStatement("create table D?(id int Primary key,Deposit int,Date datetime)");
+            ps.setInt(1,name);
+            ps.executeUpdate();
+            DBInterface DBI=new DBInterfaceImpl();
+            message=DBI.CreateTransferTable(name);
+        }catch (SQLException e) {
+            message=e.getMessage();
+        }
+
+        return message;
+    }
+    public String CreateTransferTable(int name) {
+        String message="";
+
+        try(Connection conn=DBUtil.ConnectToDataBase()){
+            PreparedStatement ps=conn.prepareStatement("create table T?(id int,Transfer int,Date datetime,foreign key(id) references D?(id))");
+            ps.setInt(1,name);
+            ps.setInt(2,name);
+            ps.executeUpdate();
+            message ="                          New User Added                           ";
+            System.out.println("-------------------------------------------------------------------");
+        }catch (SQLException e) {
+            message=e.getMessage();
+        }
+
+        return message;
+    }
     @Override
     public String EditUserData() {
         String message="";
@@ -120,7 +162,7 @@ public class DBInterfaceImpl implements DBInterface{
             ps.setInt(2,acNo);
             int x=ps.executeUpdate();
             if(x==1){
-                message="Updated "+name+" value successfully";
+                message="           Updated "+name+" value successfully             ";
             }
         } catch (SQLException e) {
             message=e.getMessage();
@@ -141,7 +183,7 @@ public class DBInterfaceImpl implements DBInterface{
             ps.setInt(1,acNo);
             int x=ps.executeUpdate();
             if(x==1){
-                message="Deleted User with Account Number "+acNo+" successfully";
+                message="      Deleted User with Account Number "+acNo+" successfully       ";
             }
         } catch (SQLException e) {
             message=e.getMessage();
@@ -177,7 +219,7 @@ public class DBInterfaceImpl implements DBInterface{
                 System.out.println("Password      :"+rs.getString("password"));
                 System.out.println("-------------------------------------------------------------------");
             }else{
-                message="User Does not Exists..!";
+                message="               User Does not Exists..!                ";
             }
         } catch (SQLException e) {
             message=e.getMessage();
@@ -187,6 +229,98 @@ public class DBInterfaceImpl implements DBInterface{
 
     @Override
     public String ShowAllUsersData() {
-        return null;
+        String message="";
+
+        try(Connection conn= DBUtil.ConnectToDataBase()) {
+            PreparedStatement ps=conn.prepareStatement("Select * from users");
+            ResultSet rs=ps.executeQuery();
+            int i=1;
+            while(rs.next()){
+                System.out.println("-------------------------------------------------------------------");
+                System.out.println(i+")                        User Profile                            ");
+                System.out.println("-------------------------------------------------------------------");
+                System.out.println("Name          :"+rs.getString("FirstName")+" "+rs.getString("LastName"));
+                System.out.println("UserID        : "+rs.getInt("id"));
+                System.out.println("Account Number: "+rs.getInt("AccountNumber"));
+                System.out.println("Address       :"+rs.getString("Address"));
+                System.out.println("Area Code     :"+rs.getInt("AreaCode"));
+                System.out.println("-------------------------------------------------------------------");
+                System.out.println("                          Login Credentials                        ");
+                System.out.println("-------------------------------------------------------------------");
+                System.out.println("Username      :"+rs.getString("username"));
+                System.out.println("Password      :"+rs.getString("password"));
+                System.out.println("-------------------------------------------------------------------");
+                i++;
+            }
+        } catch (SQLException e) {
+            message=e.getMessage();
+        }
+        return message;
+    }
+
+    @Override
+    public String ShowTransactions(int AcNo) {
+        String message="";
+
+        try(Connection conn=DBUtil.ConnectToDataBase()){
+            PreparedStatement ps=conn.prepareStatement("Select * from D?");
+            ps.setInt(1,AcNo);
+            ResultSet rs=ps.executeQuery();
+            System.out.println("-------------------------------------------------------------------");
+            System.out.println("|      Deposit               Withdraw            Date And Time  |");
+            System.out.println("-------------------------------------------------------------------");
+            while(rs.next()){
+                System.out.println("|  "+rs.getInt("Deposit")+"  |  "+rs.getInt("Withdraw")+"  |  "+rs.getDate("Date")+"  |");
+            }
+        } catch (SQLException e) {
+            message=e.getMessage();
+        }
+
+        return message;
+    }
+
+    @Override
+    public String AddMoney(int AcNo) {
+        String message="";
+        Scanner sc=new Scanner(System.in);
+        System.out.print("Enter Amount: ");
+        int Amount=sc.nextInt();
+
+        try(Connection conn=DBUtil.ConnectToDataBase()){
+            PreparedStatement ps=conn.prepareStatement("insert into D? values(?,now())");
+            ps.setInt(1,AcNo);
+            ps.setInt(2,Amount);
+            ps.executeUpdate();
+            message ="                   "+Amount+" Added to "+AcNo+"                    ";
+            System.out.println("-------------------------------------------------------------------");
+        } catch (SQLException e) {
+            message=e.getMessage();
+        }
+
+        return message;
+    }
+
+    @Override
+    public String TransferMoney(int AcNo) {
+        String message="";
+        Scanner sc=new Scanner(System.in);
+        System.out.print("Enter Beneficiary Account Number: ");
+        int AcNo2=sc.nextInt();
+        try(Connection conn=DBUtil.ConnectToDataBase()){
+            PreparedStatement ps=conn.prepareStatement("select * from A?");
+            ps.setInt(1,AcNo);
+            ResultSet rs=ps.executeQuery();
+            System.out.println("-------------------------------------------------------------------");
+            System.out.println("|      Deposit               Withdraw            Date And Time  |");
+            System.out.println("-------------------------------------------------------------------");
+            while(rs.next()){
+                System.out.println("|  "+rs.getInt("Deposit")+"  |  "+rs.getInt("Withdraw")+"  |  "+rs.getDate("Date")+"  |");
+            }
+
+        } catch (SQLException e) {
+            message=e.getMessage();
+        }
+
+        return message;
     }
 }
