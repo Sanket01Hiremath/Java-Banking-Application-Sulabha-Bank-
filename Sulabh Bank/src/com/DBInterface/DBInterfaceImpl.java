@@ -8,6 +8,7 @@ import com.UserTasks.UserTasksMenu;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.Random;
 import java.util.Scanner;
 
 public class DBInterfaceImpl implements DBInterface{
@@ -118,7 +119,7 @@ public class DBInterfaceImpl implements DBInterface{
         String message="";
 
         try(Connection conn=DBUtil.ConnectToDataBase()){
-            PreparedStatement ps=conn.prepareStatement("create table D?(id int Primary key,Deposit int,Date datetime)");
+            PreparedStatement ps=conn.prepareStatement("create table D?(Did int,Deposit int,DDate datetime)");
             ps.setInt(1,name);
             ps.executeUpdate();
             DBInterface DBI=new DBInterfaceImpl();
@@ -133,7 +134,7 @@ public class DBInterfaceImpl implements DBInterface{
         String message="";
 
         try(Connection conn=DBUtil.ConnectToDataBase()){
-            PreparedStatement ps=conn.prepareStatement("create table T?(id int,Transfer int,Date datetime,foreign key(id) references D?(id))");
+            PreparedStatement ps=conn.prepareStatement("create table T?(id int,Transfer int,Date datetime");
             ps.setInt(1,name);
             ps.setInt(2,name);
             ps.executeUpdate();
@@ -183,6 +184,9 @@ public class DBInterfaceImpl implements DBInterface{
             ps.setInt(1,acNo);
             int x=ps.executeUpdate();
             if(x==1){
+                DBInterface DBI=new DBInterfaceImpl();
+                DBI.removeTable1(acNo);
+                DBI.removeTable2(acNo);
                 message="      Deleted User with Account Number "+acNo+" successfully       ";
             }
         } catch (SQLException e) {
@@ -190,6 +194,28 @@ public class DBInterfaceImpl implements DBInterface{
         }
 
         return message;
+    }
+
+    @Override
+    public void removeTable1(int AcNo) {
+        try(Connection conn=DBUtil.ConnectToDataBase()) {
+            PreparedStatement ps=conn.prepareStatement("drop table D?");
+            ps.setInt(1,AcNo);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    @Override
+    public void removeTable2(int AcNo) {
+        try(Connection conn=DBUtil.ConnectToDataBase()) {
+            PreparedStatement ps=conn.prepareStatement("drop table T?");
+            ps.setInt(1,AcNo);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override
@@ -267,10 +293,32 @@ public class DBInterfaceImpl implements DBInterface{
             ps.setInt(1,AcNo);
             ResultSet rs=ps.executeQuery();
             System.out.println("-------------------------------------------------------------------");
-            System.out.println("|      Deposit               Withdraw            Date And Time  |");
+            System.out.println("|      Transaction ID            Deposit          Date And Time   |");
             System.out.println("-------------------------------------------------------------------");
             while(rs.next()){
-                System.out.println("|  "+rs.getInt("Deposit")+"  |  "+rs.getInt("Withdraw")+"  |  "+rs.getDate("Date")+"  |");
+                System.out.println("|  "+rs.getInt("Did")+"  |  "+rs.getInt("Deposit")+"  |  "+rs.getDate("DDate")+"  |");
+            }
+            DBInterface DBI=new DBInterfaceImpl();
+            DBI.ShowTransactions1(AcNo);
+        } catch (SQLException e) {
+            message=e.getMessage();
+        }
+
+        return message;
+    }
+    @Override
+    public String ShowTransactions1(int AcNo) {
+        String message="";
+
+        try(Connection conn=DBUtil.ConnectToDataBase()){
+            PreparedStatement ps=conn.prepareStatement("Select * from T?");
+            ps.setInt(1,AcNo);
+            ResultSet rs=ps.executeQuery();
+            System.out.println("-------------------------------------------------------------------");
+            System.out.println("|      Transaction ID            Withdraw          Date And Time   |");
+            System.out.println("-------------------------------------------------------------------");
+            while(rs.next()){
+                System.out.println("|  "+rs.getInt("id")+"  |  "+rs.getInt("Withdraw")+"  |  "+rs.getDate("Date")+"  |");
             }
         } catch (SQLException e) {
             message=e.getMessage();
@@ -278,18 +326,16 @@ public class DBInterfaceImpl implements DBInterface{
 
         return message;
     }
-
     @Override
-    public String AddMoney(int AcNo) {
+    public String AddMoney(int AcNo,int Amount) {
         String message="";
-        Scanner sc=new Scanner(System.in);
-        System.out.print("Enter Amount: ");
-        int Amount=sc.nextInt();
-
+        Random rd=new Random();
+        int id= rd.nextInt();
         try(Connection conn=DBUtil.ConnectToDataBase()){
-            PreparedStatement ps=conn.prepareStatement("insert into D? values(?,now())");
+            PreparedStatement ps=conn.prepareStatement("insert into D? values(?,?,now())");
             ps.setInt(1,AcNo);
-            ps.setInt(2,Amount);
+            ps.setInt(2,id);
+            ps.setInt(3,Amount);
             ps.executeUpdate();
             message ="                   "+Amount+" Added to "+AcNo+"                    ";
             System.out.println("-------------------------------------------------------------------");
@@ -306,21 +352,70 @@ public class DBInterfaceImpl implements DBInterface{
         Scanner sc=new Scanner(System.in);
         System.out.print("Enter Beneficiary Account Number: ");
         int AcNo2=sc.nextInt();
+        System.out.print("Enter Amount: ");
+        int Amount= sc.nextInt();
+        DBInterface DBI=new DBInterfaceImpl();
+        if(Amount>DBI.CheckBalance(AcNo)){
+            System.out.println("-------------------------------------------------------------------");
+            return "                       Insufficient Balance                        ";
+        }
+        try{
+            DBI.AddMoney(AcNo2,Amount);
+        }catch (Exception e){
+            System.out.println("-------------------------------------------------------------------");
+            System.out.println("                Check Beneficiary Account Number...                ");
+            System.out.println("-------------------------------------------------------------------");
+            DBI.TransferMoney(AcNo);
+        }
+        Random rd=new Random();
+        int id= rd.nextInt();
         try(Connection conn=DBUtil.ConnectToDataBase()){
-            PreparedStatement ps=conn.prepareStatement("select * from A?");
+            PreparedStatement ps=conn.prepareStatement("insert into T? values(?,?,now())");
             ps.setInt(1,AcNo);
-            ResultSet rs=ps.executeQuery();
+            ps.setInt(2,id);
+            ps.setInt(3,Amount);
+            ps.executeUpdate();
+            message ="                   "+Amount+" Transfered to "+AcNo2+"                    ";
             System.out.println("-------------------------------------------------------------------");
-            System.out.println("|      Deposit               Withdraw            Date And Time  |");
-            System.out.println("-------------------------------------------------------------------");
-            while(rs.next()){
-                System.out.println("|  "+rs.getInt("Deposit")+"  |  "+rs.getInt("Withdraw")+"  |  "+rs.getDate("Date")+"  |");
-            }
-
         } catch (SQLException e) {
             message=e.getMessage();
         }
-
         return message;
+    }
+
+    @Override
+    public int CheckBalance(int AcNo) {
+        int sum1 = 0;
+        int sum2 = 0;
+        try (Connection conn = DBUtil.ConnectToDataBase()) {
+            PreparedStatement ps = conn.prepareStatement("select * from D?");
+            ps.setInt(1, AcNo);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                sum1 += rs.getInt("Deposit");
+            }
+            DBInterface DBI=new DBInterfaceImpl();
+            sum2=DBI.CheckBalance1(AcNo);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return sum1-sum2;
+    }
+    @Override
+    public int CheckBalance1(int AcNo) {
+        int sum1 = 0;
+        try (Connection conn = DBUtil.ConnectToDataBase()) {
+            PreparedStatement ps = conn.prepareStatement("select * from T?");
+            ps.setInt(1, AcNo);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                sum1 += rs.getInt("Withdraw");
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return sum1;
     }
 }

@@ -13,10 +13,15 @@ public interface DBInterface {
     public String CreateTransferTable(int name);
     public String EditUserData();
     public String RemoveUser();
+    public void removeTable1(int AcNo);
+    public void removeTable2(int AcNo);
     public String ShowSpecificUserData();
     public String ShowAllUsersData();
     public String ShowTransactions(int AcNo);
-    public String AddMoney(int AcNo);
+    public String ShowTransactions1(int AcNo);
+    public String AddMoney(int AcNo,int Amount);
     public String TransferMoney(int AcNo);
+    public int CheckBalance(int AcNo);
+    public int CheckBalance1(int AcNo);
 
 }
