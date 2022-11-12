@@ -18,10 +18,20 @@ public class UserTasksMenu {
         DBInterface DBI=new DBInterfaceImpl();
 
         if(i==1){
-            System.out.println(DBI.AddMoney(AcNo));
+            Scanner Sc=new Scanner(System.in);
+            System.out.print("Enter Amount: ");
+            int Amount= Sc.nextInt();
+            System.out.println(DBI.AddMoney(AcNo,Amount));
             UserTasksMenu.ChooseATask(AcNo);
         }else if(i==2){
             System.out.println(DBI.TransferMoney(AcNo));
+            System.out.println("-------------------------------------------------------------------");
+            UserTasksMenu.ChooseATask(AcNo);
+        }else if(i==3){
+            System.out.println(DBI.CheckBalance(AcNo));
+            UserTasksMenu.ChooseATask(AcNo);
+        }else if(i==4){
+            System.out.println(DBI.ShowTransactions(AcNo));
             UserTasksMenu.ChooseATask(AcNo);
         }else if(i==8){
             System.out.println("-------------------------------------------------------------------");
