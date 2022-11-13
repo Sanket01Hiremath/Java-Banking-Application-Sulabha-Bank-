@@ -10,7 +10,7 @@ public class FirstPage {
         System.out.println("----------------------------------------------------------------");
         System.out.println("                    Welcome TO Sulabh Bank                      ");
         System.out.println("----------------------------------------------------------------");
-        System.out.println("              Important Note:\n         Type 1-> For Admin Login,\n        Type 2-> For Customer Login");
+        System.out.println("                       Important Note:\n                  Type 1-> For Admin Login,\n                Type 2-> For Customer Login");
         System.out.print("Enter the UserType: ");
         int userType=sc.nextInt();
         System.out.println("----------------------------------------------------------------");
