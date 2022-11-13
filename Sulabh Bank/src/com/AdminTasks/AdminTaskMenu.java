@@ -11,7 +11,7 @@ public class AdminTaskMenu {
     public static void ChooseATask(){
         Scanner sc=new Scanner(System.in);
         System.out.println("-------------------------------------------------------------------");
-        System.out.println("                    Important Note:\ntype 1: To add new Customer,\ntype 2: To Update Customer Data,\ntype 3: To Remove Customer,\ntype 4: To Get A Customer Details,\ntype 5: To Get All Customers Details,\ntype 6: To Add Money,\ntype 7: To Transfer Money,\ntype 8: To Check Balance,\ntype 9: To get Transactions,\ntype 101: To LogOut");
+        System.out.println("                    Important Note:\ntype 1: To add new Customer,\ntype 2: To Update Customer Data,\ntype 3: To Remove Customer,\ntype 4: To Get A Customer Details,\ntype 5: To Get All Customers Details,\ntype 6:To Manage Customer Account,\ntype 101: To LogOut");
         System.out.print("Choose a task you want to perform: ");
         int i=sc.nextInt();
         System.out.println("-------------------------------------------------------------------");
@@ -36,28 +36,7 @@ public class AdminTaskMenu {
             Scanner Sc=new Scanner(System.in);
             System.out.print("Enter AccountNumber: ");
             int AcNo= Sc.nextInt();
-            System.out.print("Enter Amount: ");
-            int Amount= Sc.nextInt();
-            System.out.println(DBI.AddMoney(AcNo,Amount));
-            AdminTaskMenu.ChooseATask();
-        }else if(i==7){
-            Scanner Sc=new Scanner(System.in);
-            System.out.print("Enter AccountNumber: ");
-            int AcNo= Sc.nextInt();
-            System.out.println(DBI.TransferMoney(AcNo));
-            System.out.println("-------------------------------------------------------------------");
-            AdminTaskMenu.ChooseATask();
-        }else if(i==8){
-            Scanner Sc=new Scanner(System.in);
-            System.out.print("Enter AccountNumber: ");
-            int AcNo= Sc.nextInt();
-            System.out.println(DBI.CheckBalance(AcNo));
-            AdminTaskMenu.ChooseATask();
-        }else if(i==9){
-            Scanner Sc=new Scanner(System.in);
-            System.out.print("Enter AccountNumber: ");
-            int AcNo= Sc.nextInt();
-            System.out.println(DBI.ShowTransactions(AcNo));
+            UserTasksMenu.ChooseATask(AcNo,"Admin");
             AdminTaskMenu.ChooseATask();
         }else if(i==101){
             System.out.println("-------------------------------------------------------------------");

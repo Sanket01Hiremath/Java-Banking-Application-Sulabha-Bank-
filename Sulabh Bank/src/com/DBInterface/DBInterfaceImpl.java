@@ -43,7 +43,7 @@ public class DBInterfaceImpl implements DBInterface{
             if(rs.next()){
                 System.out.println("---------------------------------------------");
                 System.out.println("               Login Successful              ");
-                UserTasksMenu.ChooseATask(rs.getInt("AccountNumber"));
+                UserTasksMenu.ChooseATask(rs.getInt("AccountNumber"),"Customer");
             }else{
                 System.out.println("---------------------------------------------");
                 System.out.println("            User Does Not Exists..           ");
