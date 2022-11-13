@@ -1,6 +1,8 @@
 package com.DBInterface;
 
 import Home.FirstPage;
+import com.AdminTasks.AdminTaskMenu;
+import com.Beans.RegistrationBean;
 import com.Beans.UserBean;
 import com.DBUtility.DBUtil;
 import com.UserTasks.UserTasksMenu;
@@ -12,6 +14,48 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class DBInterfaceImpl implements DBInterface{
+
+    @Override
+    public String RegisterUserBean() {
+        Scanner sc=new Scanner(System.in);
+        System.out.print("FirstName    : ");
+        String Fname=sc.next();
+        System.out.print("LastName     : ");
+        String Lname=sc.next();
+        System.out.print("Address      : ");
+        String Address=sc.next();
+        System.out.print("AreaCode     : ");
+        int AreaCode=sc.nextInt();
+
+        RegistrationBean rb=new RegistrationBean(Fname,Lname,Address,AreaCode);
+        return RegisterUser(rb);
+    }
+
+    @Override
+    public String RegisterUser(RegistrationBean rb) {
+        String message="";
+
+        try(Connection conn=DBUtil.ConnectToDataBase()) {
+            PreparedStatement ps=conn.prepareStatement("insert into newUser values(?,?,?,?,0)");
+            ps.setString(1,rb.getFirstName());
+            ps.setString(2,rb.getLastName());
+            ps.setString(3,rb.getAddress());
+            ps.setInt(4,rb.getAreaCode());
+            int x=ps.executeUpdate();
+            if(x==1) {
+                message="                       Registration Successful                        ";
+            }else{
+                message="                        New User Not Registered                         ";
+                System.out.println("-------------------------------------------------------------------");
+            }
+
+        } catch (SQLException e) {
+            message=e.getMessage();
+            System.out.println("-------------------------------------------------------------------");
+        }
+
+        return message;
+    }
 
     @Override
     public Boolean ConnectToDB(String username,String password) {
@@ -60,9 +104,33 @@ public class DBInterfaceImpl implements DBInterface{
 
     @Override
     public String CreateUserBean() {
+        /*String Fname="";
+        String Lname="";
+        String Address="";
+        int AreaCode=0;
+        try(Connection conn=DBUtil.ConnectToDataBase()) {
+            PreparedStatement ps=conn.prepareStatement("Select * from newUser where id=0");
+            ResultSet rs=ps.executeQuery();
+            if(!rs.next()){
+                System.out.println("              No new Registrations                  ");
+                AdminTaskMenu.ChooseATask();
+            }else{
+                Fname=rs.getString("FirstName");
+                Lname=rs.getString("LastName");
+                Address=rs.getString("Address");
+                AreaCode=rs.getInt("AreaCode");
+                DeleteRegUser();
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }*/
+
+
         Scanner sc=new Scanner(System.in);
         System.out.print("UserID       : ");
         int id=sc.nextInt();
+        System.out.print("AccountNumber: ");
+        int AcNo=sc.nextInt();
         System.out.print("FirstName    : ");
         String Fname=sc.next();
         System.out.print("LastName     : ");
@@ -71,8 +139,6 @@ public class DBInterfaceImpl implements DBInterface{
         String Address=sc.next();
         System.out.print("AreaCode     : ");
         int AreaCode=sc.nextInt();
-        System.out.print("AccountNumber: ");
-        int AcNo=sc.nextInt();
         System.out.print("Username     : ");
         String Uname=sc.next();
         System.out.print("Password     : ");
@@ -85,7 +151,7 @@ public class DBInterfaceImpl implements DBInterface{
 
     @Override
     public String CreateUser(UserBean userBean) {
-        String message="User Not Created";
+        String message="";
 
         try(Connection conn=DBUtil.ConnectToDataBase()) {
             PreparedStatement ps=conn.prepareStatement("insert into Users values(?,?,?,?,?,?,?,?)");
@@ -99,8 +165,7 @@ public class DBInterfaceImpl implements DBInterface{
             ps.setString(8,userBean.getPassword());
             int x=ps.executeUpdate();
             if(x==1) {
-                DBInterface DBI=new DBInterfaceImpl();
-                message=DBI.CreateDepositTable(userBean.getAccountNo());
+                message=CreateDepositTable(userBean.getAccountNo());
             }else{
                 message="                        New User Not Added                         ";
                 System.out.println("-------------------------------------------------------------------");
@@ -112,6 +177,17 @@ public class DBInterfaceImpl implements DBInterface{
         }
 
         return message;
+    }
+
+    @Override
+    public void DeleteRegUser() {
+        try(Connection conn=DBUtil.ConnectToDataBase()) {
+            PreparedStatement ps=conn.prepareStatement("update newUser set id=1");
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            AdminTaskMenu.ChooseATask();
+        }
     }
 
     @Override
@@ -130,13 +206,13 @@ public class DBInterfaceImpl implements DBInterface{
 
         return message;
     }
+    @Override
     public String CreateTransferTable(int name) {
         String message="";
 
         try(Connection conn=DBUtil.ConnectToDataBase()){
-            PreparedStatement ps=conn.prepareStatement("create table T?(id int,Transfer int,Date datetime");
+            PreparedStatement ps=conn.prepareStatement("create table T?(id int,Transfer int,Date datetime)");
             ps.setInt(1,name);
-            ps.setInt(2,name);
             ps.executeUpdate();
             message ="                          New User Added                           ";
             System.out.println("-------------------------------------------------------------------");
@@ -318,7 +394,7 @@ public class DBInterfaceImpl implements DBInterface{
             System.out.println("|      Transaction ID            Withdraw          Date And Time   |");
             System.out.println("-------------------------------------------------------------------");
             while(rs.next()){
-                System.out.println("|  "+rs.getInt("id")+"  |  "+rs.getInt("Withdraw")+"  |  "+rs.getDate("Date")+"  |");
+                System.out.println("|  "+rs.getInt("id")+"  |  "+rs.getInt("Transfer")+"  |  "+rs.getDate("Date")+"  |");
             }
         } catch (SQLException e) {
             message=e.getMessage();
@@ -410,7 +486,7 @@ public class DBInterfaceImpl implements DBInterface{
             ps.setInt(1, AcNo);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                sum1 += rs.getInt("Withdraw");
+                sum1 += rs.getInt("Transfer");
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
